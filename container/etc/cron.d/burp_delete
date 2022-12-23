@@ -1,0 +1,2 @@
+# burp delete
+0 17  * * * root     /bin/bash /root/scripts/burp-server-task-delete.sh  > /dev/null 2>&1

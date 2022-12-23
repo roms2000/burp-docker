@@ -1,0 +1,2 @@
+# burp deduplication
+0 2 * * 7   root    /usr/sbin/bedup -l -c /etc/burp/burp-server.conf >/var/log/burp/burp_bedup.log 2>&1

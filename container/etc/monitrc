@@ -1,0 +1,9 @@
+# monit config
+set daemon  30             # check services at 30 seconds intervals
+    with start delay 10    # with a start delay of 10sec
+set log syslog
+set httpd port 2812 and
+    use address localhost  # only accept connection from localhost (drop if you use M/Monit)
+    allow localhost        # allow localhost to connect to the server and
+    allow admin:monit      # require user 'admin' with password 'monit'
+include /etc/monit.d/*

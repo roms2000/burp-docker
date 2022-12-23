@@ -1,0 +1,3 @@
+# burp reports
+0  9  * * 1 root     /usr/bin/burp-reports -c /etc/burp/burp-reports.conf --report email_outdated
+0 11  * * 3 root     /usr/bin/burp-reports -c /etc/burp/burp-reports.conf --report email_outdated
