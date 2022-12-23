@@ -1,6 +1,7 @@
 # Burp docker container
 
-This repository contains files to build burp container which includes burp-ui and email sending capability.
+This repository contains files to build burp container which includes burp-ui, burp reports, maintenance task and email sending capability.
+It is based on the repository made by Ronivay : https://github.com/ronivay/burp-docker
 
 Burp is an open source backup and restore software for Unix and Windows clients.
 https://burp.grke.org/
@@ -8,11 +9,14 @@ https://burp.grke.org/
 Burp-UI is a great project which applies a graphical user interface to interact with the server, edit settings and manage clients.
 https://github.com/ziirish/burp-ui
 
+Burp reports : helpful reports for burp backup and restore.
+https://github.com/pablodav/burp_server_reports
+
 #### Installation
 
 - Clone this repository
 ```
-git clone https://github.com/ronivay/burp-docker
+git clone https://github.com/roms2000/burp-docker
 ```
 
 - build docker container manually
@@ -25,7 +29,7 @@ docker build -t burp-server .
 - or pull from dockerhub
 
 ```
-docker pull ronivay/burp-docker
+docker pull roms2000/burp-docker
 ```
 
 - run it with defaults values for testing purposes. 
@@ -77,38 +81,6 @@ Use format username:password
 
 Boolean value yes/no for TLS when SMTP_RELAY is set. Defaults to no if not set
 
-`REDIS`
-
-Boolean value true/false for using redis or not
-
-`REDIS_HOST`
-
-Redis server hostname or ip-address
-
-`REDIS_PORT`
-
-Redis server port to connect to
-
-`MYSQL`
-
-Boolean value true/false for using mysql or not
-
-`MYSQL_HOST`
-
-Mysql server hostname or ip-address
-
-`MYSQL_USER`
-
-Username for connecting to mysql server
-
-`MYSQL_DATABASE`
-
-Mysql database to use
-
-`MYSQL_PASSWORD`
-
-Mysql password to use
-
 `RESTOREPATH`
 
 Path where restored files via burp-ui are stored. Slashes need to be escaped in this, example: `\/tmp\/bui`
@@ -138,14 +110,4 @@ There are few important mountpoints you should note if preserving data is import
 `/var/log/burp-ui` - burp-ui access/error logs are not redirected to container stdout. mount a volume from host if you want to see/preserve these logs
 
 You should mount a path from host machine to these for best outcome.
-
-#### Tips
-
-- Each restart copies /etc/burp/burp-server.conf.template as /etc/burp/burp-server.conf and edits it according to variables set. If you wish to add or edit some configuration which is not supported by my build, you can edit the template file inside the container/host mountpoint to preserve things in the future. 
-
-- /etc/burp/burp.conf is generated only if /etc/burp/clientconfdir/${BUI_USER} file doesn't exist, so you can also edit that if you wish.
-
-- /etc/burp/burpui.cfg is copied from the burp-ui python package provided template on every restart, so it's currently not possible to edit it outside what variables provide.
-
-
 
