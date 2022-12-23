@@ -1,45 +1,86 @@
-FROM centos:7
+# syntax=docker/dockerfile:1
+FROM python:3.11.1-alpine3.16
 
-MAINTAINER Roni Väyrynen <roni@vayrynen.info>
+# Maintainer
+MAINTAINER Romain MARIADASSOU <roms2000@free.fr>
 
-RUN yum -y install epel-release
-RUN yum install -y make gcc gcc-c++ bzip2 pkgconfig \
-        librsync-devel libzip-devel openssl-devel uthash-devel \
-        libacl-devel ncurses-devel openssl-perl python36-devel \
-        autoconf automake libtool python-pip libffi libffi-devel \
-        git postfix mysql-devel monit cyrus-sasl-plain
+# Variables
+ARG BURPVER=3.1.4
+ARG BURPUIVER=1.0.0
+ARG BURPREPORTSVER=1.4.2
 
-RUN mkdir /etc/burp-source
-RUN git clone https://github.com/grke/burp /etc/burp-source
+# Add packages
+RUN apk add --no-cache supervisor bash logrotate curl librsync libressl tzdata cronie monit postfix
+# Add decompress packages
+RUN apk add --no-cache --virtual .fetch-deps tar
 
-RUN cd /etc/burp-source && autoreconf -vif
-RUN cd /etc/burp-source && ./configure --prefix=/usr --sysconfdir=/etc/burp --localstatedir=/var
-RUN cd /etc/burp-source && make
-RUN cd /etc/burp-source && make install
-RUN cd /etc/burp-source && make install-configs
-RUN cp /etc/burp/burp-server.conf /etc/burp/burp-server.conf.template
+# Retrieve burp
+RUN wget -O burp.tar.gz https://github.com/grke/burp/archive/${BURPVER}.tar.gz
+RUN mkdir -p /usr/src/burp
+RUN tar -xC /usr/src/burp --strip-components=1 -f burp.tar.gz
+RUN rm burp.tar.gz
 
-RUN pip3 install setuptools-rust
-RUN pip3 install --upgrade pip
-RUN pip3 install burp-ui
+# Remove decompress packages
+RUN apk del .fetch-deps
+
+# Add build packages
+RUN apk add --no-cache --virtual .build-deps \
+                autoconf \
+                automake \
+                bsd-compat-headers \
+                g++ \
+                libc-dev \
+                libffi-dev \
+                libtool \
+                linux-headers \
+                make \
+                ncurses-dev \
+                pkgconfig \
+                uthash-dev \
+                libressl-dev \
+                librsync-dev \
+                yajl-dev \
+                zlib-dev
+
+# Make burp
+RUN cd /usr/src/burp \
+        && autoreconf -vif \
+        && ./configure --prefix=/usr --sysconfdir=/etc/burp --localstatedir=/var \
+        && make && make install && make install-configs
+RUN rm -rf /usr/src/burp
+
+# Install burp-ui and burp-reports
+RUN pip3 install burp-ui==${BURPUIVER}
 RUN pip3 install "burp-ui[sql]"
-RUN pip3 install mysqlclient
 RUN pip3 install "burp-ui[gunicorn]"
 RUN pip3 install "burp-ui[gunicorn-extra]"
+RUN pip3 install burp-reports==${BURPREPORTSVER}
 
+# Remove build packages and pip cache
+RUN apk del .build-deps && rm -rf /root/.cache
+
+# Some fix
 RUN ln -s /proc/1/fd/1 /var/log/burp.log
-ADD monit-services /etc/monit.d/services
-ADD burp.sh /root/burp.sh
-RUN chmod +x /root/burp.sh
-ADD healthcheck.sh /healthcheck.sh
-RUN chmod +x /healthcheck.sh
-HEALTHCHECK --start-period=1m --interval=30s --timeout=5s --retries=2 CMD /healthcheck.sh
+RUN if [ -e /usr/bin/libressl ] && [ ! -e /usr/bin/openssl ] ; then ln -s /usr/bin/libressl /usr/bin/openssl ; fi
+RUN if [ -e /usr/local/bin/burp-reports ] && [ ! -e /usr/bin/burp-reports ] ; then ln -s /usr/local/bin/burp-reports /usr/bin/burp-reports ; fi
+RUN mkdir -p /var/log/burp /var/log/gunicorn /var/log/burp-ui
 
+# Copy files
+COPY etc /etc
+COPY scripts /root/scripts
+RUN cp -p  /usr/share/burp/scripts/* /etc/burp/
+RUN cp -pr /etc/burp /etc/burp-src-conf
+RUN chmod 0600 /etc/monitrc
+RUN chmod +x /usr/share/burp/scripts/*
+RUN find /root/scripts -name '*.sh' -exec chmod +x "{}" \;
+
+# Healthcheck
+HEALTHCHECK --start-period=1m --interval=30s --timeout=5s --retries=2 CMD /root/scripts/healthcheck.sh
+
+# Expose port
 EXPOSE 4971
 EXPOSE 4972
 EXPOSE 5000
 
-ADD entrypoint.sh /root/entrypoint.sh
-RUN chmod +x /root/entrypoint.sh
-
-CMD ["/root/entrypoint.sh"]
+# Command to run
+CMD ["/root/scripts/entrypoint.sh"]
