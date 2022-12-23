@@ -51,6 +51,10 @@ Burp-UI is now accessible at `http://your-server-ip:5000`. Password for admin us
 
 #### Variables
 
+`MACHINENAME`
+
+The machine/container name.
+
 `NOTIFY_SUCCESS` 
 
 Boolean value true/false for receiving notifications on successfull backups via email. 
@@ -59,9 +63,13 @@ Boolean value true/false for receiving notifications on successfull backups via 
 
 Boolean value true/false for receiving notification on failed backups via email.
 
+`FROM_EMAIL`
+
+Email address of the sender.
+
 `NOTIFY_EMAIL`
 
-Email address where notifications are sent to
+Email address where notifications are sent to.
 
 `SMTP_RELAY`
 
@@ -69,7 +77,7 @@ SMTP relay server address. Optional and postfix inside container will send email
 
 `SMTP_PORT`
 
-Optional SMTP relay port number when SMTP_RELAY is set. Defaults to 25 if not set
+Optional SMTP relay port number when SMTP_RELAY is set. Defaults to 25 if not set.
 
 `SMTP_AUTH`
 
@@ -79,7 +87,7 @@ Use format username:password
 
 `SMTP_TLS`
 
-Boolean value yes/no for TLS when SMTP_RELAY is set. Defaults to no if not set
+Boolean value yes/no for TLS when SMTP_RELAY is set. Defaults to no if not set.
 
 `RESTOREPATH`
 
@@ -87,15 +95,17 @@ Path where restored files via burp-ui are stored. Slashes need to be escaped in 
 
 `BUI_USER`
 
-Username which burp-ui uses to interact with the server
+Username which burp-ui uses to interact with the server.
 
 `BUI_USER_PASSWORD`
 
-BUI_USER password for burp-ui to interact with the server
+BUI_USER password for burp-ui to interact with the server.
 
 `WEBUI_ADMIN_PASSWORD`
 
 burp-ui admin user password. 
+
+
 
 #### Volumes
 

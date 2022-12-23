@@ -42,10 +42,13 @@ if [ ! -e /etc/burp/burp-server.conf ] ; then
 	grep -E '^\s*max_status_children' /etc/burp/burp-server.conf || echo 'max_status_children = 15' >> /etc/burp/burp-server.conf
 fi
 if [ ! -e /etc/burp/burpui.cfg ] ; then 
-	cp -f /usr/share/burpui/etc/burpui.sample.cfg /etc/burp/burpui.cfg
+	cp -p /etc/burp-src-conf/burpui.cfg /etc/burp/burpui.cfg
 fi
 if [ ! -e /etc/burp/burpui_gunicorn.py ] ; then 
-	cp -f /usr/share/burpui/contrib/gunicorn/burpui_gunicorn.py /etc/burp/burpui_gunicorn.py
+	cp -p /etc/burp-src-conf/burpui_gunicorn.py /etc/burp/burpui_gunicorn.py
+fi
+if [ ! -e /etc/burp/burp-reports.conf ] ; then
+	cp -p /etc/burp-src-conf/burp-reports.conf /etc/burp/burp-reports.conf
 fi
 
 # enable bui user to act as restore client
@@ -101,21 +104,22 @@ sed -i "s|^tmpdir = .\+|tmpdir = ${RESTOREPATH}|" /etc/burp/burpui.cfg
 if [[ $NOTIFY_FAILURE == "true" ]]; then
 	sed -i 's/^#notify_failure/notify_failure/g' /etc/burp/burp-server.conf
 	sed -i "s/To:youremail@example.com/To:${NOTIFY_EMAIL}/g" /etc/burp/burp-server.conf
+else
+	sed -i 's/^notify_failure/#notify_failure/g' /etc/burp/burp-server.conf
 fi
 
 if [[ $NOTIFY_SUCCESS == "true" ]]; then
 	sed -i 's/^#notify_success/notify_success/g' /etc/burp/burp-server.conf
 	sed -i "s/To:youremail@example.com/To:${NOTIFY_EMAIL}/g" /etc/burp/burp-server.conf
+else
+	sed -i 's/^notify_success/#notify_success/g' /etc/burp/burp-server.conf
 fi
 
 # Burp Reports config
 sed -i "s|__WEBUI_ADMIN_PASSWORD__|${WEBUI_ADMIN_PASSWORD}|g" /etc/burp/burp-reports.conf
 sed -i "s|__NOTIFY_EMAIL__|${NOTIFY_EMAIL}|g" /etc/burp/burp-reports.conf
-sed -i "s|__HOSTNAME__|$(hostname -s)|g" /etc/burp/burp-reports.conf
-sed -i "s|__HOSTNAME_FQDN__|$(hostname --fqdn)|g" /etc/burp/burp-reports.conf
 sed -i "s|__FROM_EMAIL__|${FROM_EMAIL}|g" /etc/burp/burp-reports.conf
 sed -i "s|__MACHINENAME__|${MACHINENAME}|g" /etc/burp/burp-reports.conf
-#sed -i "s|||g" /etc/burp/burp-reports.conf
 
 # Function to stop processes
 function StopProcesses {
