@@ -10,7 +10,7 @@ ARG BURPUIVER=1.0.0
 ARG BURPREPORTSVER=1.4.2
 
 # Add packages
-RUN apk add --no-cache supervisor bash logrotate curl librsync libressl tzdata cronie monit postfix
+RUN apk add --no-cache supervisor bash logrotate curl librsync libressl tzdata coreutils cronie monit postfix
 # Add decompress packages
 RUN apk add --no-cache --virtual .fetch-deps tar
 
