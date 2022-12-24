@@ -12,7 +12,20 @@ https://github.com/ziirish/burp-ui
 Burp reports : helpful reports for burp backup and restore.
 https://github.com/pablodav/burp_server_reports
 
-#### Installation
+The conatiner contains maintenace tasks :
+ - Burp bedup (deduplication if need)
+ - Burp delete  (option manual_delete)
+ - Burp Reports (report outdated backup/client by mail)
+
+## Installation
+
+Choice :
+
+ - Install from GIT and build the docker image
+or 
+ - Install the docker image
+
+### Installation from GIT
 
 - Clone this repository
 ```
@@ -26,11 +39,22 @@ cd container
 docker build -t burp-server .
 ```
 
-- or pull from dockerhub
+### Installation from Docker
+
+-  Pull from dockerhub
 
 ```
 docker pull roms2000/burp-docker
 ```
+
+## Launch the container
+
+Choice :
+-  with `docker run`
+or 
+- with `docker-compose`
+
+### Run the docker container 
 
 - run it with defaults values for testing purposes. 
 
@@ -42,14 +66,18 @@ Burp-UI is now accessible at `http://your-server-ip:5000`. Default username and 
 
 You can leave ports 4971 and 4972 out if you just want to try the UI.
 
+Burp-UI is now accessible at `http://your-server-ip:5000`. Password for admin user is the one you defined in `WEBUI_ADMIN_PASSWORD` variable.
+
+### Running with docker-compose
+
 - Other than testing, suggested method is to use the provided docker-compose file. Edit the variables to your preference and start up the environment
 
 ```
 docker-compose up -d
 ```
-Burp-UI is now accessible at `http://your-server-ip:5000`. Password for admin user is the one you defined in `WEBUI_ADMIN_PASSWORD` variable.
 
-#### Variables
+
+# Variables
 
 `MACHINENAME`
 
@@ -107,7 +135,7 @@ burp-ui admin user password.
 
 
 
-#### Volumes
+# Volumes
 
 There are few important mountpoints you should note if preserving data is important (usually it is unless you're not just testing this).
 
