@@ -1,5 +1,5 @@
 #!/bin/sh
-DELETE_DIRECTORY=$(cat /etc/burp/burp-server.conf | grep -E "^\s*manual_delete\s*=" | cut -d '=' -f 2 | sed 's|\s||g')
+DELETE_DIRECTORY=$(cat /etc/burp/burp-server.conf | grep -E "^\s*manual_delete\s*=" | cut -d '=' -f 2 | sed 's|\s||g' | tail -n 1)
 if [ "$(which realpath)" != "" ] && [ ! -z "${DELETE_DIRECTORY}" ] ; then
         DELETE_DIRECTORY=$( realpath ${DELETE_DIRECTORY} )
 fi
