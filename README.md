@@ -133,6 +133,18 @@ BUI_USER password for burp-ui to interact with the server.
 
 burp-ui admin user password. 
 
+`ENABLE_BURP_DELETE`
+
+Enable the cron task to delete postpone old backup. Default to true. 
+
+`ENABLE_BURP_BEDUP`
+
+Enable the cron task to deduplicate files. Default to false. 
+
+`ENABLE_BURP_REPORTS`
+
+Enable the cron task to get burp reports. Default to true. 
+
 
 
 # Volumes

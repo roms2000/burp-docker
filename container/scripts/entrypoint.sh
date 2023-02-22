@@ -10,6 +10,9 @@ NOTIFY_EMAIL=${NOTIFY_EMAIL:-youremail@example.com}
 FROM_EMAIL=${FROM_EMAIL:-sender@example.com}
 SMTP_PORT=${SMTP_PORT:-25}
 MACHINENAME=${MACHINENAME:-burp-docker}
+ENABLE_BURP_DELETE=${ENABLE_BURP_DELETE:-true}
+ENABLE_BURP_BEDUP=${ENABLE_BURP_BEDUP:-false}
+ENABLE_BURP_REPORTS=${ENABLE_BURP_REPORTS:-true}
 
 # configure postfix
 postconf -e 'inet_protocols = ipv4'
@@ -120,6 +123,19 @@ sed -i "s|__WEBUI_ADMIN_PASSWORD__|${WEBUI_ADMIN_PASSWORD}|g" /etc/burp/burp-rep
 sed -i "s|__NOTIFY_EMAIL__|${NOTIFY_EMAIL}|g" /etc/burp/burp-reports.conf
 sed -i "s|__FROM_EMAIL__|${FROM_EMAIL}|g" /etc/burp/burp-reports.conf
 sed -i "s|__MACHINENAME__|${MACHINENAME}|g" /etc/burp/burp-reports.conf
+
+# cron config
+if [[ $ENABLE_BURP_DELETE == "false" ]]; then
+	rm -vf /etc/cron.d/burp_delete
+fi
+if [[ $ENABLE_BURP_BEDUP == "false" ]]; then
+	rm -vf /etc/cron.d/burp_bedup
+fi
+if [[ $ENABLE_BURP_REPORTS == "false" ]]; then
+	rm -vf /etc/cron.d/burp_reports
+fi
+
+
 
 # Function to stop processes
 function StopProcesses {
